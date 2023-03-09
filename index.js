@@ -1,27 +1,31 @@
 const express = require("express");
 const app = express();
-const cors = require("cors");
+const bodyParser = require("body-parser");
+const multer = require("multer"); // v1.0.5
+const upload = multer();
 const connectDB = require("./db/connect");
 require("dotenv").config();
-
-const port = 8000;
-
-app.use(cors({ origin: ["http://localhost:3000"] }));
-
-app.use(express.json());
 
 const users = require("./routes/users");
 const notFound = require("./middleware/not-found");
 
-app.use("/api/v1/users", users);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(upload.array());
 
-app.use(notFound);
+app.use("/api/v1/users", users);
 
 app.get("/", (req, res) => {
   res.send("HSL DEMO API");
 });
 
-console.log(process.env.CONNECTION_STRING);
+app.post("/", (req, res) => {
+  res.json({ body: req.body });
+});
+
+app.use(notFound);
+
+const port = 8000;
 
 const startRest = async () => {
   try {

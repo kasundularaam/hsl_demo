@@ -6,8 +6,10 @@ const getAllUsers = asyncWrapper(async (req, res) => {
   const users = await User.find({});
   res.status(200).json(users);
 });
+
 const registerUser = asyncWrapper(async (req, res, next) => {
   const { email: email } = req.body;
+  console.log(req.body);
   const user = await User.findOne({ email: email });
   if (user) {
     return next(createError("Already have account", 500));
