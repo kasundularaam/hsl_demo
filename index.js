@@ -1,13 +1,14 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const multer = require("multer"); // v1.0.5
+const multer = require("multer");
 const upload = multer();
 const connectDB = require("./db/connect");
 require("dotenv").config();
 
 const users = require("./routes/users");
 const notFound = require("./middleware/not-found");
+const errorHandlerMiddleware = require("./middleware/error-handler");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,9 +20,7 @@ app.get("/", (req, res) => {
   res.send("HSL DEMO API");
 });
 
-app.post("/", (req, res) => {
-  res.json({ body: req.body });
-});
+app.use(errorHandlerMiddleware);
 
 app.use(notFound);
 
