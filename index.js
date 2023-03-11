@@ -5,6 +5,11 @@ const multer = require("multer");
 const upload = multer();
 const connectDB = require("./db/connect");
 require("dotenv").config();
+const cors = require("cors");
+
+const port = 8000;
+
+app.use(cors({ origin: "http://localhost:3000" }));
 
 const users = require("./routes/users");
 const notFound = require("./middleware/not-found");
@@ -23,8 +28,6 @@ app.get("/", (req, res) => {
 app.use(errorHandlerMiddleware);
 
 app.use(notFound);
-
-const port = 8000;
 
 const startRest = async () => {
   try {
