@@ -2,7 +2,7 @@ const User = require("../models/User");
 const asyncWrapper = require("../middleware/async");
 const { createError } = require("../errors/api-error");
 
-const getAllUsers = asyncWrapper(async (req, res) => {
+const getUsers = asyncWrapper(async (req, res) => {
   const users = await User.find({});
   res.status(200).json(users);
 });
@@ -55,4 +55,4 @@ const getUser = asyncWrapper(async (req, res, next) => {
   res.status(200).json(user);
 });
 
-module.exports = { getAllUsers, registerUser, loginUser, getUser };
+module.exports = { getAllUsers: getUsers, registerUser, loginUser, getUser };
