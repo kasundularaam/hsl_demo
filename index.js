@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
   if (token == null) return res.status(200).json({ message: "NOtWELCOMe" });
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) return res.status(200).json({ message: "Nice TRY bt NOtWELCOMe" });
-    res.json({ message: "YOU ARE WELCOME" });
+    res.json({ message: `YOU ARE WELCOME ${user.name}` });
   });
 });
 
