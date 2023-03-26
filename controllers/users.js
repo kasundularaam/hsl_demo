@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const asyncWrapper = require("../middleware/async");
 const { createError } = require("../errors/api-error");
+const bcrypt = require("bcrypt");
 
 const getUsers = asyncWrapper(async (req, res) => {
   const users = await User.find({});
@@ -14,7 +15,9 @@ const registerUser = asyncWrapper(async (req, res, next) => {
   if (user) {
     return next(createError("Already have an account", 500));
   }
-  const newUser = await User.create(req.body);
+
+  const hashedPassword = bcrypt.hashSync(req.body.password, 10);
+  const newUser = await User.create({ ...req.body, password: hashedPassword });
   res.status(201).json(newUser);
 });
 
@@ -26,9 +29,12 @@ const loginUser = asyncWrapper(async (req, res, next) => {
   if (!user) {
     return next(createError("User does not have an account", 404));
   }
-  if (user.password != password) {
-    return next(createError("Wrong password", 404));
+
+  const validPassword = bcrypt.compareSync(password, user.password);
+  if (!validPassword) {
+    return res.status(400).send("Invalid password.");
   }
+
   res.status(200).json(user);
 });
 
