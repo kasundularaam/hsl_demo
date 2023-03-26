@@ -2,6 +2,8 @@ const User = require("../models/User");
 const asyncWrapper = require("../middleware/async");
 const { createError } = require("../errors/api-error");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const getUsers = asyncWrapper(async (req, res) => {
   const users = await User.find({});
@@ -18,7 +20,15 @@ const registerUser = asyncWrapper(async (req, res, next) => {
 
   const hashedPassword = bcrypt.hashSync(req.body.password, 10);
   const newUser = await User.create({ ...req.body, password: hashedPassword });
-  res.status(201).json(newUser);
+
+  const payload = {
+    sub: newUser.uid,
+    name: newUser.name,
+  };
+
+  const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET);
+
+  res.status(201).json({ token: accessToken });
 });
 
 const loginUser = asyncWrapper(async (req, res, next) => {
@@ -35,7 +45,9 @@ const loginUser = asyncWrapper(async (req, res, next) => {
     return res.status(400).send("Invalid password.");
   }
 
-  res.status(200).json(user);
+  const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET);
+
+  res.status(200).json({ token: accessToken });
 });
 
 const getUser = asyncWrapper(async (req, res, next) => {
