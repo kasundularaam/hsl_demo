@@ -8,16 +8,8 @@ const getUsers = asyncWrapper(async (req, res) => {
 });
 
 const registerUser = asyncWrapper(async (req, res, next) => {
-  const { name, email, password } = req.body;
-  if (!name) {
-    return next(createError("Name Is Required", 500));
-  }
-  if (!email) {
-    return next(createError("Email Is Required", 500));
-  }
-  if (!password) {
-    return next(createError("Password Is Required", 500));
-  }
+  const { email } = req.body;
+
   const user = await User.findOne({ email: email });
   if (user) {
     return next(createError("Already have an account", 500));
@@ -28,12 +20,7 @@ const registerUser = asyncWrapper(async (req, res, next) => {
 
 const loginUser = asyncWrapper(async (req, res, next) => {
   const { email, password } = req.body;
-  if (!email) {
-    return next(createError("Email Is Required", 500));
-  }
-  if (!password) {
-    return next(createError("Password Is Required", 500));
-  }
+
   const user = await User.findOne({ email: email });
 
   if (!user) {
